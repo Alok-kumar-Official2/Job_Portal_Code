@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 
+const authRoutes = require('./routes/authRoutes')
 const logger = require('./utils/loggerr');
 const globalErrorHandler = require('./middlewares/errorMiddleware');
 const AppError = require('./utils/Apperror');
@@ -33,6 +34,8 @@ app.get('/api/test-error', (req, res, next) => {
     // We just pass it to `next()` and the globalErrorHandler catches it.
     next(new AppError('This is a test error to prove the global handler works!', 400));
 });
+
+app.use('/api/auth', authRoutes);
 
 // 3. GLOBAL ERROR HANDLER (MUST BE THE LAST MIDDLEWARE)
 app.use(globalErrorHandler);
