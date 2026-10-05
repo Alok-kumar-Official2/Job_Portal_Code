@@ -4,10 +4,13 @@ const express = require('express');
 const morgan = require('morgan');
 
 const authRoutes = require('./routes/authRoutes')
+const userRoutes = require('./routes/userRoutes')
+const profileRoutes = require('./routes/profileRoutes');
 const logger = require('./utils/loggerr');
 const globalErrorHandler = require('./middlewares/errorMiddleware');
 const AppError = require('./utils/Apperror');
 const { connectMongoDB } = require('.//config/database')
+const {verifyToken} = require('./middlewares/authMiddleware');
 
 const app = express();
 
@@ -36,6 +39,19 @@ app.get('/api/test-error', (req, res, next) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users',userRoutes);
+app.use('/api/profiles', profileRoutes);
+
+app.get('/api/test-protected', verifyToken,(req,res)=>{
+    console.log("Protected route accessed");
+    console.log( "User data : " , req.user);
+
+    res.json({
+        success : true,
+        message : "You accesssed the protected route",
+        user : req.user,
+    });
+});
 
 // 3. GLOBAL ERROR HANDLER (MUST BE THE LAST MIDDLEWARE)
 app.use(globalErrorHandler);
